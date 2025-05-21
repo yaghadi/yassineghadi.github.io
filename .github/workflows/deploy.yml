@@ -1,0 +1,48 @@
+name: Deploy to Pages
+
+on:
+  schedule:
+    - cron: "0 0 * * *"  # Run daily at midnight
+  workflow_dispatch:     # Allow manual triggering
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v2
+        with:
+          path: this_repo
+
+      - name: Set up node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Build Site
+        run: |
+          npm i -g notablog
+          cd ${GITHUB_WORKSPACE}/this_repo
+          notablog generate .
+
+      - name: Post Hook
+        run: |
+          cd ${GITHUB_WORKSPACE}/this_repo/public
+          mv index.html index_temp.html
+          mv home.html index.html
+          mv index_temp.html projects.html
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: this_repo/public
+
+      - name: Delete workflow runs
+        uses: Mattraks/delete-workflow-runs@main
+        with:
+          retain_days: 2
+          keep_minimum_runs: 6
