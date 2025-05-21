@@ -1,0 +1,41 @@
+<nav class="Navbar">
+  <a href="index.html">
+    <div class="Navbar__Btn">
+      <% if (siteMeta.iconUrl) { %>
+        <span><img class="inline-img-icon" src="<%= siteMeta.iconUrl %>"></span>&nbsp;
+      <% } %>
+      <span>Home</span>
+    </div>
+  </a>
+
+  <span class="Navbar__Delim">&centerdot;</span>
+  <a target="_blank" rel="noopener noreferrer" href="https://github.com/SantoshSrivatsan24">
+    <div class="Navbar__Btn"> 🐙 <span style="margin-left: 6px;">Github</span></div>
+  </a>
+  <span class="Navbar__Delim">&centerdot;</span>
+  <a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/santosh-srivatsan/">
+    <div class="Navbar__Btn"> 👨‍💼 <span style="margin-left: 6px;">Linkedin</span></div>
+  </a>
+  <span class="Navbar__Delim">&centerdot;</span>
+  <a target="_blank" rel="noopener noreferrer" href="https://drive.google.com/file/d/17t9jUErAwVuILbysCV-4s7olxMz4G9Rm/view?usp=sharing">
+    <div class="Navbar__Btn"> 📜 <span style="margin-left: 6px;">Resume</span></div>
+  </a>
+  <span class="Navbar__Delim">&centerdot;</span>
+  <a href="projects.html">
+    <div class="Navbar__Btn"> 💻 <span> Projects</span></div>
+  </a>
+
+  <% siteMeta.pages.forEach(function(page) { %>    
+    <% if (page.publish && page.inMenu) { %>
+      <span class="Navbar__Delim">&centerdot;</span>
+      <a href="<%= page.url %>">
+        <div class="Navbar__Btn">
+          <% if (page.iconUrl) { %>
+            <span><img class="inline-img-icon" src="<%= page.iconUrl %>"></span>&nbsp;
+          <% } %>
+          <span><%= page.title %></span>
+        </div>
+      </a>
+    <% } %>
+  <% }) %>
+</nav>
