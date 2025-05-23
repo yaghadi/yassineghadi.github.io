@@ -26,6 +26,7 @@ jobs:
         run: |
           npm i -g notablog
           cd ${GITHUB_WORKSPACE}/this_repo
+          rm -rf .notablog_cache  
           notablog generate .
 
       - name: Post Hook
