@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- iOS Safari -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- Chrome, Firefox OS and Opera Status Bar Color -->
+<meta name="theme-color" content="#FFFFFF">
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css">
+<link rel="stylesheet" type="text/css"
+  href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.19.0/themes/prism.min.css">
+<link rel="stylesheet" type="text/css" href="css/SourceSansPro.css">
+<link rel="stylesheet" type="text/css" href="css/theme.css">
+<link rel="stylesheet" type="text/css" href="css/notablog.css">
+<!-- Favicon -->
+
+  <link rel="shortcut icon" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text text-anchor=%22middle%22 dominant-baseline=%22middle%22 x=%2250%22 y=%2255%22 font-size=%2280%22&gt;👨🏼‍💻&lt;/text&gt;&lt;/svg&gt;">
+
+<style>
+  :root {
+    font-size: 20px;
+  }
+</style>
+  <title>Designing a Simulator for a Cache, Branch Predictor, and Out-of-Order Pipelined Superscalar&nbsp;|&nbsp;Yassine’s Website</title>
+  <meta property="og:type" content="blog">
+  <meta property="og:title" content="Designing a Simulator for a Cache, Branch Predictor, and Out-of-Order Pipelined Superscalar">
+  
+    <meta name="description" content="Here I describe some of the projects I worked on while taking a grad class on Microprocessor Architecture at my university.">
+    <meta property="og:description" content="Here I describe some of the projects I worked on while taking a grad class on Microprocessor Architecture at my university.">
+  
+  
+    <meta property="og:image" content="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text text-anchor=%22middle%22 dominant-baseline=%22middle%22 x=%2250%22 y=%2255%22 font-size=%2280%22&gt;📈&lt;/text&gt;&lt;/svg&gt;">
+  
+  <style>
+    .DateTagBar {
+      margin-top: 1.0rem;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="Navbar">
+  <a href="index.html">
+    <div class="Navbar__Btn">
+      
+        <span><img class="inline-img-icon" src="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text text-anchor=%22middle%22 dominant-baseline=%22middle%22 x=%2250%22 y=%2255%22 font-size=%2280%22&gt;👨🏼‍💻&lt;/text&gt;&lt;/svg&gt;"></span>&nbsp;
+      
+      <span>Home</span>
+    </div>
+  </a>
+
+  <span class="Navbar__Delim">&centerdot;</span>
+  <a target="_blank" rel="noopener noreferrer" href="https://github.com/SantoshSrivatsan24">
+    <div class="Navbar__Btn"> 🐙 <span style="margin-left: 6px;">Github</span></div>
+  </a>
+  <span class="Navbar__Delim">&centerdot;</span>
+  <a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/santosh-srivatsan/">
+    <div class="Navbar__Btn"> 👨‍💼 <span style="margin-left: 6px;">Linkedin</span></div>
+  </a>
+  <span class="Navbar__Delim">&centerdot;</span>
+  <a target="_blank" rel="noopener noreferrer" href="https://drive.google.com/file/d/17t9jUErAwVuILbysCV-4s7olxMz4G9Rm/view?usp=sharing">
+    <div class="Navbar__Btn"> 📜 <span style="margin-left: 6px;">Resume</span></div>
+  </a>
+  <span class="Navbar__Delim">&centerdot;</span>
+  <a href="projects.html">
+    <div class="Navbar__Btn"> 💻 <span> Projects</span></div>
+  </a>
+
+      
+    
+      <span class="Navbar__Delim">&centerdot;</span>
+      <a href="home.html">
+        <div class="Navbar__Btn">
+          
+            <span><img class="inline-img-icon" src="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text text-anchor=%22middle%22 dominant-baseline=%22middle%22 x=%2250%22 y=%2255%22 font-size=%2280%22&gt;👨🏼‍💻&lt;/text&gt;&lt;/svg&gt;"></span>&nbsp;
+          
+          <span>Yassine’s Website</span>
+        </div>
+      </a>
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+</nav>
+  <header class="Header">
+    
+    <div class="Header__Spacer Header__Spacer--NoCover">
+    </div>
+    
+      <div class="Header__Icon">
+        <span><img class="inline-img-icon" src="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text text-anchor=%22middle%22 dominant-baseline=%22middle%22 x=%2250%22 y=%2255%22 font-size=%2280%22&gt;📈&lt;/text&gt;&lt;/svg&gt;"></span>
+      </div>
+    
+    <h1 class="Header__Title">Designing a Simulator for a Cache, Branch Predictor, and Out-of-Order Pipelined Superscalar</h1>
+    
+      <div class="DateTagBar">
+        
+        
+          <span class="DateTagBar__Item DateTagBar__Tag DateTagBar__Tag--yellow">
+            <a href="tag/ECE 563.html">ECE 563</a>
+          </span>
+        
+          <span class="DateTagBar__Item DateTagBar__Tag DateTagBar__Tag--green">
+            <a href="tag/Microprocessor Architecture.html">Microprocessor Architecture</a>
+          </span>
+        
+      </div>
+    
+  </header>
+  <article id="https://www.notion.so/1fa75552ce7181a18a28fbdca093cc93" class="PageRoot"><h2 id="https://www.notion.so/1fa75552ce7181b9ab71daa0e209b87f" class="ColorfulBlock ColorfulBlock--ColorDefault Heading Heading--2"><a class="Anchor" href="#https://www.notion.so/1fa75552ce7181b9ab71daa0e209b87f"><svg width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><span class="SemanticStringArray"><span class="SemanticString">CacheSim</span></span></h2><h2 id="https://www.notion.so/1fa75552ce718100ba71e9c1f56fb396" class="ColorfulBlock ColorfulBlock--ColorDefault Heading Heading--2"><a class="Anchor" href="#https://www.notion.so/1fa75552ce718100ba71e9c1f56fb396"><svg width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><span class="SemanticStringArray"><span class="SemanticString">Introduction</span></span></h2><div id="https://www.notion.so/1fa75552ce7181bd999ceb589300c8ac" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">CacheSim is a trace-driven cache simulator that implements the Write Back Write Allocate policy. It is generic and can be instantiated at any level in the memory hierarchy - L1, L2, or L3. It is also flexible and can be configured to support any </span><span class="SemanticString"><em class="SemanticString__Fragment SemanticString__Fragment--Italic">cache size</em></span><span class="SemanticString">, </span><span class="SemanticString"><em class="SemanticString__Fragment SemanticString__Fragment--Italic">block size</em></span><span class="SemanticString">, or </span><span class="SemanticString"><em class="SemanticString__Fragment SemanticString__Fragment--Italic">associativity</em></span><span class="SemanticString">. Furthermore, CacheSim can be augmented with a stream-buffer prefetch unit whose size (# of stream buffers) and degree (# of blocks prefetched) is specified at the start of simulation.</span></span></p></div><div id="https://www.notion.so/1fa75552ce718197b291c2a48fcb674d" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><div id="https://www.notion.so/1fa75552ce7181ce9f68d2e8fb3e92ac" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">CacheSim was built to compare the performance, area, and energy of different memory hierarchy configurations using a subset of the SPEC 2006 and SPEC 2007 benchmark suites.</span></span></p></div><h2 id="https://www.notion.so/1fa75552ce71819fa5e2ea94b8d1e7bf" class="ColorfulBlock ColorfulBlock--ColorDefault Heading Heading--2"><a class="Anchor" href="#https://www.notion.so/1fa75552ce71819fa5e2ea94b8d1e7bf"><svg width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><span class="SemanticStringArray"><span class="SemanticString">🤖 Working</span></span></h2><ul class="BulletedListWrapper"><li id="https://www.notion.so/1fa75552ce71818e928beee1a951b608" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString">A cache receives a R/W request from a level above it in the memory hierarchy (either the CPU or another cache).</span></span></li><li id="https://www.notion.so/1fa75552ce7181eb9754d76118eb655e" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString">A cache interacts with the level below it only when it suffers from a R/W miss. It issues a R request to the next level and has to </span><span class="SemanticString"><em class="SemanticString__Fragment SemanticString__Fragment--Italic">allocate</em></span><span class="SemanticString"> the requested block.</span></span></li><li id="https://www.notion.so/1fa75552ce7181e6bcbdd99c887d2f2b" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString">A block is allocated in the cache in two steps:</span></span><ul class="BulletedListWrapper"><li id="https://www.notion.so/1fa75552ce7181bba6ecf86004fff8fb" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString">Making space for the requested block </span><span class="SemanticString"><em class="SemanticString__Fragment SemanticString__Fragment--Italic">X -</em></span><span class="SemanticString"> If there is at least one invalid block in the set, then there is already space for the requested block </span><span class="SemanticString"><em class="SemanticString__Fragment SemanticString__Fragment--Italic">X</em></span><span class="SemanticString"> and no further action is required. If not, then the LRU block is evicted by issuing a write to the next level.</span></span></li><li id="https://www.notion.so/1fa75552ce7181158d98d3e2225f3f4a" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString">Bringing in the requested block </span><span class="SemanticString"><em class="SemanticString__Fragment SemanticString__Fragment--Italic">X</em></span><span class="SemanticString"> - Issue a R request to the next level in memory hierarchy and place </span><span class="SemanticString"><em class="SemanticString__Fragment SemanticString__Fragment--Italic">X </em></span><span class="SemanticString">in the set.</span></span></li></ul></li><li id="https://www.notion.so/1fa75552ce7181dc87add6bb3ddb1e18" class="BulletedList"><span class="SemanticStringArray"><span class="SemanticString">The LRU counters associated with the blocks in a set are updated on every access. Blocks are also marked dirty when written to and invalid when evicted.</span></span></li></ul><div id="https://www.notion.so/1fa75552ce7181dd95f2cdd87cb3a743" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><div id="https://www.notion.so/1fa75552ce7181b9838afe7a10baa1a0" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"><span class="SemanticString">Introducing a stream buffer prefetch unit adds another layer of complexity to CacheSim. The prefetch unit can support </span><span class="SemanticString"><em class="SemanticString__Fragment SemanticString__Fragment--Italic">N</em></span><span class="SemanticString"> stream buffers each of which has a degree </span><span class="SemanticString"><em class="SemanticString__Fragment SemanticString__Fragment--Italic">M</em></span><span class="SemanticString">. Each buffer has a valid bit that indicates the validity of the buffer as a whole. A valid bit of 0 implies that the buffer is empty and 1 implies that the buffer is full and contains </span><span class="SemanticString"><em class="SemanticString__Fragment SemanticString__Fragment--Italic">M</em></span><span class="SemanticString"> consecutive memory blocks. A R/W request for a block </span><span class="SemanticString"><em class="SemanticString__Fragment SemanticString__Fragment--Italic">X</em></span><span class="SemanticString"> has to now search both the cache and the stream buffer(s). As such, there are four possible scenarios.</span></span></p></div><ol class="NumberedListWrapper"><li id="https://www.notion.so/1fa75552ce718112a19ee57509afdf59" class="NumberedList" value="1"><span class="SemanticStringArray"><span class="SemanticString">Create a new prefetch stream: requested block misses in the cache and stream buffer</span></span></li><li id="https://www.notion.so/1fa75552ce71819b9801e16483187327" class="NumberedList" value="2"><span class="SemanticStringArray"><span class="SemanticString">Benefit from and continue a prefetch stream: Requested block misses in the cache but hits in the stream buffer</span></span></li></ol><div id="https://www.notion.so/1fa75552ce7181fe86f7f5e1860631d0" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div><div id="https://www.notion.so/1fa75552ce71819ca909e2355457ba5b" class="ColorfulBlock ColorfulBlock--ColorDefault Text"><p class="Text__Content"><span class="SemanticStringArray"></span></p></div></article>
+  <footer class="Footer">
+  <div>&copy; Yassine’s Website 2019-2021</div>
+  <div>&centerdot;</div>
+  <div>Powered by <a href="https://github.com/dragonman225/notablog" target="_blank"
+      rel="noopener noreferrer">Notablog</a>.
+  </div>
+</footer>
+</body>
+
+</html>
